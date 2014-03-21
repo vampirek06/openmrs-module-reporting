@@ -15,6 +15,7 @@ package org.openmrs.module.reporting.query;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 import org.openmrs.OpenmrsObject;
 
@@ -25,6 +26,7 @@ public abstract class BaseIdSet<T extends OpenmrsObject> implements IdSet<T> {
 	
 	//***** PROPERTIES *****
 
+	private String uuid = UUID.randomUUID().toString();
     private Set<Integer> memberIds;
     
     //***** CONSTRUCTORS *****
@@ -34,15 +36,28 @@ public abstract class BaseIdSet<T extends OpenmrsObject> implements IdSet<T> {
     }
     
     public BaseIdSet(Set<Integer> memberIds) {
+		this();
     	setMemberIds(memberIds);
     }
     
     public BaseIdSet(Integer... memberIds) {
+		this();
     	add(memberIds);
     }
     
     //***** PROPERTY ACCESS *****
-	
+
+	/**
+	 * @return the uuid
+	 */
+	public String getUuid() {
+		return uuid;
+	}
+
+	public void setUuid(String uuid) {
+		this.uuid = uuid;
+	}
+
 	/**
 	 * @return the memberIds
 	 */
@@ -77,7 +92,7 @@ public abstract class BaseIdSet<T extends OpenmrsObject> implements IdSet<T> {
 	}
 
 	/**
-	 * @see IdSet#size()
+	 * @see IdSet#getSize() ()
 	 */
 	public int getSize() {
 		return getMemberIds().size();

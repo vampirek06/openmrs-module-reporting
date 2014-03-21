@@ -23,6 +23,11 @@ import org.openmrs.OpenmrsObject;
 public interface IdSet<T extends OpenmrsObject> extends Cloneable {
 
 	/**
+	 * @return a unique uuid for this idset
+	 */
+	public String getUuid();
+
+	/**
 	 * @return all memberIds in the set
 	 */
 	public Set<Integer> getMemberIds();
