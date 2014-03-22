@@ -13,19 +13,14 @@
  */
 package org.openmrs.module.reporting.query;
 
-import java.util.Set;
-
 import org.openmrs.OpenmrsObject;
+
+import java.util.Set;
 
 /**
  * IdSet Interface
  */
 public interface IdSet<T extends OpenmrsObject> extends Cloneable {
-
-	/**
-	 * @return a unique uuid for this idset
-	 */
-	public String getUuid();
 
 	/**
 	 * @return all memberIds in the set
