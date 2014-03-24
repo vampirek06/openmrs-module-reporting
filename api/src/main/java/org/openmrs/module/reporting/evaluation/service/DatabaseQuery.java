@@ -13,14 +13,11 @@
  */
 package org.openmrs.module.reporting.evaluation.service;
 
-import java.util.List;
-import java.util.Map;
-
 public interface DatabaseQuery {
 
 	/**
-	 * @return a List of rows, each containing a Map of columnName to columnValue for that row
+	 * Execute the query such that it produces a DatabaseQueryResult
 	 */
-	public List<Map<String, Object>> execute();
+	public DatabaseQueryResult execute();
 
 }

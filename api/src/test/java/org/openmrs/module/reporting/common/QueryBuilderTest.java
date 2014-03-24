@@ -22,6 +22,7 @@ import org.openmrs.Encounter;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.reporting.evaluation.EvaluationContext;
 import org.openmrs.module.reporting.evaluation.service.CriteriaQuery;
+import org.openmrs.module.reporting.evaluation.service.DatabaseQueryResult;
 import org.openmrs.module.reporting.evaluation.service.EvaluationService;
 import org.openmrs.module.reporting.query.encounter.EncounterIdSet;
 import org.openmrs.module.reporting.query.encounter.definition.BasicEncounterQuery;
@@ -44,7 +45,6 @@ public class QueryBuilderTest extends BaseModuleContextSensitiveTest {
 	protected Log log = LogFactory.getLog(this.getClass());
 
 	@Test
-	@Ignore
 	public void benchmarkTableJoinNoHibernateWithHqlBuilder() throws Exception {
 		BasicEncounterQuery q = new BasicEncounterQuery();
 		//q.addEncounterType(Context.getEncounterService().getEncounterType("ART_INITIAL"));
@@ -60,8 +60,8 @@ public class QueryBuilderTest extends BaseModuleContextSensitiveTest {
 			CriteriaQuery query = new CriteriaQuery(Encounter.class);
 			query.addColumnsToReturn(property);
 			query.whereEqual("encounterId", encounterIdSet);
-			List<Map<String, Object>> result = query.execute();
-			System.out.println("Retrieved " + result.size() + " " + property + "s");
+			DatabaseQueryResult result = query.execute();
+			System.out.println("Retrieved " + result.getNumRows() + " " + property + "s");
 		}
 
 		Context.getService(EvaluationService.class).deleteIdSet(encounterIdSet.getMemberIds().hashCode());

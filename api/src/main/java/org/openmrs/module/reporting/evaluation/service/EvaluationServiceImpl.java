@@ -26,7 +26,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -42,7 +41,7 @@ public class EvaluationServiceImpl extends BaseOpenmrsService implements Evaluat
 	 * @see EvaluationService#executeQuery(DatabaseQuery)
 	 */
 	@Transactional
-	public List<Map<String, Object>> executeQuery(DatabaseQuery query) {
+	public DatabaseQueryResult executeQuery(DatabaseQuery query) {
 		return query.execute();
 	}
 

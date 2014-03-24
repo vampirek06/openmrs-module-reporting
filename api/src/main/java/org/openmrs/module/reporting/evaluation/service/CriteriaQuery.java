@@ -19,14 +19,13 @@ import org.openmrs.module.reporting.common.DateUtil;
 import org.openmrs.module.reporting.common.HibernateUtil;
 import org.openmrs.module.reporting.common.ObjectUtil;
 import org.openmrs.module.reporting.common.Timer;
+import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.query.IdSet;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -38,7 +37,7 @@ public class CriteriaQuery implements DatabaseQuery {
 
 	private ClassMetadata classMetadata;
 	private Criteria criteria;
-	private List<String> columnNames = new ArrayList<String>();
+	private List<DataSetColumn> registeredColumns = new ArrayList<DataSetColumn>();
 	private ProjectionList projectionList;
 	private List<Set<Integer>> idSetsRegistered = new ArrayList<Set<Integer>>();
 
@@ -93,11 +92,11 @@ public class CriteriaQuery implements DatabaseQuery {
 			Projection p = Projections.property(split[0]);
 			if (split.length > 1) {
 				projectionList.add(p, split[1]);
-				columnNames.add(split[1]);
+				registeredColumns.add(new DataSetColumn(split[1], split[1], Object.class));
 			}
 			else {
 				projectionList.add(p);
-				columnNames.add(split[0]);
+				registeredColumns.add(new DataSetColumn(split[0], split[0], Object.class));
 			}
 		}
 		return this;
@@ -208,49 +207,38 @@ public class CriteriaQuery implements DatabaseQuery {
 	//***** EXECUTION METHODS *****
 
 	/**
-	 * Executes the query and returns the result
+	 * @see DatabaseQuery#execute()
 	 */
-	public List<Map<String, Object>> execute() {
-		List<Map<String, Object>> ret = new ArrayList<Map<String, Object>>();
+	public DatabaseQueryResult execute() {
+		DatabaseQueryResult result = new DatabaseQueryResult();
+		result.setColumns(registeredColumns);
 
+		log.debug("Query Execution Start.");
 		Timer timer = Timer.start();
-		log.warn("Query Execution Start.");
-
 		List<Integer> idSetsOwned = new ArrayList<Integer>();
-
 		try {
+			log.debug("Found " + idSetsRegistered + " configured for this query.");
 			for (Set<Integer> ids : idSetsRegistered) {
 				boolean isAlreadyPersisted = Context.getService(EvaluationService.class).isIdSetPersisted(ids);
 				if (!isAlreadyPersisted) {
+					log.debug("Need to persist a new IdSet for joining");
 					Context.getService(EvaluationService.class).persistIdSet(ids);
 					idSetsOwned.add(Context.getService(EvaluationService.class).retrieveIdSetKey(ids));
 				}
-			}
-
-			List<?> results = criteria.list();
-			log.warn(timer.logInterval("Primary query executed"));
-
-			for (Object rowObject : results) {
-				Map<String, Object> rowMap = new LinkedHashMap<String, Object>();
-				if (columnNames.size() == 1) {
-					rowMap.put(columnNames.get(0), rowObject);
-				} else {
-					Object[] rowArray = (Object[]) rowObject;
-					for (int i = 0; i < columnNames.size(); i++) {
-						rowMap.put(columnNames.get(i), rowArray[i]);
-					}
+				else {
+					log.debug("IdSet for joining already persisted");
 				}
-				ret.add(rowMap);
 			}
-
-			log.warn(timer.logInterval("Results transformed into a List of " + ret.size() + " Maps"));
+			List<?> l = criteria.list();
+			for (Object resultRow : l) {
+				result.addResult(resultRow);
+			}
+			log.debug(timer.logInterval("Primary query executed"));
+			return result;
 		}
 		finally {
 			Context.getService(EvaluationService.class).deleteIdSets(idSetsOwned);
 		}
-
-		log.warn(timer.logInterval("Query Execution End."));
-		return ret;
 	}
 
 	//***** PROPERTY ACCESS *****

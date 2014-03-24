@@ -37,7 +37,7 @@
     </modules>
 
 	<properties>
-		<openMRSVersion>1.6.6</openMRSVersion>
+		<openMRSVersion>1.9.0</openMRSVersion>
 		<htmlwidgetsVersion>1.6.4</htmlwidgetsVersion>
 		<serializationVersion>0.2.7</serializationVersion>
 		<calculationVersion>1.1</calculationVersion>
@@ -71,6 +71,13 @@
 					<artifactId>commons-logging</artifactId>
 				</exclusion>
 			</exclusions>
+		</dependency>
+
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>5.1.28</version>
+			<scope>test</scope>
 		</dependency>
 
 		<dependency>

@@ -14,6 +14,7 @@
 package org.openmrs.module.reporting.evaluation.service;
 
 import org.openmrs.api.OpenmrsService;
+import org.openmrs.module.reporting.dataset.DataSetRowList;
 import org.openmrs.module.reporting.evaluation.EvaluationContext;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,7 +31,7 @@ public interface EvaluationService extends OpenmrsService {
 	 * @return the results of evaluating the passed DatabaseQuery
 	 */
 	@Transactional
-	public List<Map<String, Object>> executeQuery(DatabaseQuery query);
+	public DatabaseQueryResult executeQuery(DatabaseQuery query);
 
 	/**
 	 * Get the key that can be used to uniquely reference this id set in temporary storage
