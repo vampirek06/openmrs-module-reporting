@@ -69,22 +69,25 @@ public class EvaluationServiceImpl extends BaseOpenmrsService implements Evaluat
 	 */
 	@Transactional
 	public boolean persistIdSet(Set<Integer> ids) {
+		if (ids == null || ids.isEmpty()) {
+			return false;
+		}
 		Integer idSetKey = retrieveIdSetKey(ids);
 		if (isIdSetPersisted(ids)) {
-			log.warn("Attempting to persist an IdSet that has previously been persisted.  Using existing values.");
+			log.debug("Attempting to persist an IdSet that has previously been persisted.  Using existing values.");
 			// TODO: As an additional check here, we could confirm that they are the same by loading into memory
 			return false;
 		}
 
 		StringBuilder q = new StringBuilder();
-		q.append("insert into reporting_idset (idset_key, member_id) values");
+		q.append("insert into reporting_idset (idset_key, member_id) values ");
 		for (Iterator<Integer> i = ids.iterator(); i.hasNext(); ) {
 			Integer id = i.next();
 			q.append("(").append(idSetKey).append(",").append(id).append(")").append(i.hasNext() ? "," : "");
 		}
 		administrationService.executeSQL(q.toString(), false);  // TODO: Use a SqlQuery implementation to save this
 		currentIdSetKeys.add(idSetKey);
-		log.warn("Persisted idset: " + idSetKey + "; size: " + ids.size() + "; total active: " + currentIdSetKeys.size());
+		log.debug("Persisted idset: " + idSetKey + "; size: " + ids.size() + "; total active: " + currentIdSetKeys.size());
 		return true;
 	}
 
@@ -122,7 +125,7 @@ public class EvaluationServiceImpl extends BaseOpenmrsService implements Evaluat
 		String q = "delete from reporting_idset where idset_key = " + idSetKey + "";
 		administrationService.executeSQL(q, false);  // TODO: Use a SqlQuery implementation to save this
 		currentIdSetKeys.remove(idSetKey);
-		log.warn("Deleted idset: " + idSetKey + "; total active: " + currentIdSetKeys.size());
+		log.debug("Deleted idset: " + idSetKey + "; total active: " + currentIdSetKeys.size());
 	}
 
 	@Override
