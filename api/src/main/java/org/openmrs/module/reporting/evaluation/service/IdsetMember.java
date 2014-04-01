@@ -12,12 +12,13 @@
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
 
-package org.openmrs.module.reporting.test;
+package org.openmrs.module.reporting.evaluation.service;
 
 import java.io.Serializable;
 
 /**
- * Here to allow unit testing to work by including a hibernate hbm.xml file for these tables
+ * This class only exists to allow us to bind to it using Hibernate,
+ * it is typically not used or instantiated on it's own.
  */
 public class IdsetMember implements Serializable {
 

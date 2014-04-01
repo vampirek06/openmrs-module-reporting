@@ -85,7 +85,7 @@ public class DatabaseQueryResult {
 	 * @return the results of the query as a Map of column values, using the first two defined columns
 	 * If less than 2 columns are defined, an Exception is thrown
 	 */
-	public <T, V> Map<T, V> asMap(Class<T> keyType, Class<T> valueType) {
+	public <T, V> Map<T, V> asMap(Class<T> keyType, Class<V> valueType) {
 		Map<T, V> ret = new LinkedHashMap<T, V>();
 		for (Object[] row : getResults()) {
 			ret.put((T)row[0], (V)row[1]);
