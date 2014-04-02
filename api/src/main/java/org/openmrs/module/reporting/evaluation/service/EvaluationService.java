@@ -14,12 +14,11 @@
 package org.openmrs.module.reporting.evaluation.service;
 
 import org.openmrs.api.OpenmrsService;
-import org.openmrs.module.reporting.dataset.DataSetRowList;
 import org.openmrs.module.reporting.evaluation.EvaluationContext;
+import org.openmrs.module.reporting.evaluation.querybuilder.QueryBuilder;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -28,52 +27,39 @@ import java.util.Set;
 public interface EvaluationService extends OpenmrsService {
 
 	/**
-	 * @return the results of evaluating the passed DatabaseQuery
+	 * Perform a full evaluation and return the results as a DatabaseQueryResult
 	 */
 	@Transactional
-	public DatabaseQueryResult executeQuery(DatabaseQuery query);
+	public DatabaseQueryResult evaluate(QueryBuilder queryBuilder);
 
 	/**
 	 * Get the key that can be used to uniquely reference this id set in temporary storage
 	 */
 	@Transactional
-	public Integer retrieveIdSetKey(Set<Integer> ids);
+	public Integer generateKey(Set<Integer> ids);
+
+	/**
+	 * Indicate that you require joining against a particular set of ids, and that they
+	 * should be made available to your calling code until you call the stopUsing method
+	 * Returns the key that can be used to reference this id set at a later point in time
+	 */
+	@Transactional
+	public Integer startUsing(Set<Integer> ids);
+
+	/**
+	 * Indicate that you require using the different base id sets contained in the passed EvaluationContext
+	 */
+	public List<Integer> startUsing(EvaluationContext context);
 
 	/**
 	 * Returns true of an IdSet with the passed idSetKey is already persisted to temporary storage
 	 */
 	@Transactional
-	public boolean isIdSetPersisted(Set<Integer> ids);
-
-	/**
-	 * Save the passed ids to temporary storage so queries can join against the members
-	 * Returns false if the ids were already persisted and were not re-saved
-	 */
-	@Transactional
-	public boolean persistIdSet(Set<Integer> ids);
-
-	/**
-	 * Persists IdSets in temporary storage for later querying as appropriate for the given EvaluationContext
-	 * @return the Integer idSetKeys for each IdSet that was newly registered, implying these are the IdSets
-	 * that the caller owns and can delete when finished
-	 */
-	public List<Integer> persistIdSetsForContext(EvaluationContext context);
+	public boolean isInUse(Integer idSetKey);
 
 	/**
 	 * Remove the passed idSet from temporary storage
 	 */
 	@Transactional
-	public void deleteIdSet(Integer idSetKey);
-
-	/**
-	 * Remove the passed idSets from temporary storage
-	 */
-	@Transactional
-	public void deleteIdSets(List<Integer> idSetKey);
-
-	/**
-	 * @see EvaluationService#getCurrentIdSetKeys()
-	 */
-	@Transactional
-	public Set<Integer> getCurrentIdSetKeys();
+	public void stopUsing(Integer idSetKey);
 }

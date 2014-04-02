@@ -11,13 +11,23 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
-package org.openmrs.module.reporting.evaluation.service;
+package org.openmrs.module.reporting.evaluation.querybuilder;
 
-public interface DatabaseQuery {
+import org.hibernate.Query;
+import org.hibernate.SessionFactory;
+import org.openmrs.module.reporting.dataset.DataSetColumn;
+
+import java.util.List;
+
+public interface QueryBuilder {
 
 	/**
-	 * Execute the query such that it produces a DatabaseQueryResult
+	 * @return the columns that this query will return
 	 */
-	public DatabaseQueryResult execute();
+	public List<DataSetColumn> getColumns();
 
+	/**
+	 * Generate a Query that can be evaluated
+	 */
+	public Query buildQuery(SessionFactory sessionFactory);
 }

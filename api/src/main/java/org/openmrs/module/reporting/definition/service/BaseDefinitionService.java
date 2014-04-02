@@ -258,12 +258,14 @@ public abstract class BaseDefinitionService<T extends Definition> extends BaseOp
 	 * actual evaluators.  Examples might include running the evaluators in batches, etc
 	 */
 	protected Evaluated<T> executeEvaluator(DefinitionEvaluator<T> evaluator, T definition, EvaluationContext context) throws EvaluationException {
-		List<Integer> ownedIdSets = Context.getService(EvaluationService.class).persistIdSetsForContext(context);
+		List<Integer> ownedIdSets = Context.getService(EvaluationService.class).startUsing(context);
 		try {
 			return evaluator.evaluate(definition, context);
 		}
 		finally {
-			Context.getService(EvaluationService.class).deleteIdSets(ownedIdSets);
+			for (Integer idSetKey : ownedIdSets) {
+				Context.getService(EvaluationService.class).stopUsing(idSetKey);
+			}
 		}
 	}
 	

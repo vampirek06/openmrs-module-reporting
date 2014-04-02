@@ -23,7 +23,7 @@ import org.openmrs.module.reporting.evaluation.EvaluationContext;
 import org.openmrs.module.reporting.evaluation.EvaluationException;
 import org.openmrs.module.reporting.evaluation.service.DatabaseQueryResult;
 import org.openmrs.module.reporting.evaluation.service.EvaluationService;
-import org.openmrs.module.reporting.evaluation.service.HqlQuery;
+import org.openmrs.module.reporting.evaluation.querybuilder.HqlQueryBuilder;
 
 /**
  * Evaluates a PreferredIdentifierDataDefinition to produce a PatientData
@@ -45,7 +45,7 @@ public class PreferredIdentifierDataEvaluator implements PatientDataEvaluator {
 			return c;
 		}
 
-		HqlQuery query = new HqlQuery();
+		HqlQueryBuilder query = new HqlQueryBuilder();
 		query.select("pi.patient.patientId", "pi");
 		query.from(PatientIdentifier.class, "pi");
 		query.whereEqual("pi.voided", false);
@@ -59,7 +59,7 @@ public class PreferredIdentifierDataEvaluator implements PatientDataEvaluator {
 		// Order to ensure that the preferred is based on the preferred flag first, dateCreated second
 		query.orderAsc("pi.preferred").orderAsc("pi.dateCreated");
 
-		DatabaseQueryResult result = Context.getService(EvaluationService.class).executeQuery(query);
+		DatabaseQueryResult result = Context.getService(EvaluationService.class).evaluate(query);
 
 		for (Object[] row : result.getResults()) {
 			c.addData((Integer)row[0], row[1]);
